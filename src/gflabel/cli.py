@@ -36,7 +36,7 @@ from build123d import (
 )
 
 from . import fragments
-from .bases import plain, pred, webb
+from .bases import plain, pred, webb, therick
 from .label import render_divided_label
 from .options import LabelStyle, RenderOptions
 from .util import IndentingRichHandler, batched
@@ -99,7 +99,7 @@ def run(argv: list[str] | None = None):
     parser = ArgumentParser(description="Generate gridfinity bin labels")
     parser.add_argument(
         "--base",
-        choices=["pred", "plain", "none", "webb", "predbox"],
+        choices=["pred", "plain", "none", "webb", "predbox", "therick"],
         default="pred",
         help="Label base to generate onto. [Default: %(default)s]",
     )
@@ -249,7 +249,7 @@ def run(argv: list[str] | None = None):
         args.labels = ["{webbolt(pozi)}{...}M3×20"]
 
     if not args.width:
-        if args.base in {"pred", "webb"}:
+        if args.base in {"pred", "webb", "therick"}:
             args.width = "1"
         else:
             sys.exit(f"Error: Must specify width for label base '{args.base}'.")
@@ -286,6 +286,11 @@ def run(argv: list[str] | None = None):
             body = plain.body(args.width, args.height)
         elif args.base == "webb":
             body = webb.body()
+        if args.base == "therick":
+            body = therick.body(
+                args.width,
+                recessed=is_embossed,
+            )
         else:
             body = None
 
