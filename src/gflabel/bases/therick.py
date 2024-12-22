@@ -46,7 +46,9 @@ def _outer_edge(width_u: int) -> Sketch:
             # on one edge; 1.9 is the extra distance to our "zero" point
             # x = 2.1 + 1.9
             x = -straight_width / 2
-            l1 = Polyline([(x - 1.9, 0), (x - 1.9, 2.85), (x - 0.9, 2.85)])
+            #l1 = Polyline([(x - 1.9, 0), (x - 1.9, 2.85), (x - 0.9, 2.85)])
+            #l1 = Polyline([(x - 1.9, 0), (x - 1.9, 4.85), (x - 0.9, 4.85)])
+            l1 = Polyline([(x - 1.9, 0), (x - 1.9, 5.45), (x - 0.9, 5.45)])
             FilletPolyline(
                 [
                     l1 @ 1,
@@ -109,10 +111,11 @@ def body(width_u: int, recessed: bool = False) -> LabelBase:
         # Extrude the base up
         extrude(amount=0.3, both=True)
 
-        if recessed:
-            add(_inner_edge(width_u=width_u))
-            # Cut the indent out of the top face
-            extrude(amount=0.3, mode=Mode.SUBTRACT)
+        # PDS don't want to cut into top face:
+        #if recessed:
+        #    add(_inner_edge(width_u=width_u))
+        #    # Cut the indent out of the top face
+        #    extrude(amount=0.3, mode=Mode.SUBTRACT)
 
         # 0.2 mm fillet all top edges
         fillet_edges = [
@@ -122,9 +125,11 @@ def body(width_u: int, recessed: bool = False) -> LabelBase:
         fillet(fillet_edges, radius=0.2)
 
     #area = Vector(width_u * 42 - 4.2 - 5.5, 10.5)
-    area = Vector(width_u * 25 - 2.2 - 5.5, 10.5)
-    if recessed:
-        return LabelBase(part.part, area)
+    #area = Vector(width_u * 25 - 2.2 - 5.5, 10.5)
+    # 1.0mm margin for label on top and sides
+    area = Vector(width_u * 25 - 1.0 - 5.5, 13 - 1.0)
+    #if recessed:
+    #    return LabelBase(part.part, area)
 
     # We want the sketch at z=0 to cut in
     return LabelBase(part.part.locate(Location((0, 0, -0.4))), area)
